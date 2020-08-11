@@ -1,13 +1,15 @@
-from django.shortcuts import render
 from django.http import JsonResponse
+from .models import MlModel
 
 # Create your views here.
 
+
 def listModel(request):
-    
+    #models = MlModel.objects.all()
+
     d = {
-    "sefa":"5",
-    "result":1
+
+        "result": "litmodel"
     }
-   
+
     return JsonResponse(d)
