@@ -3,5 +3,11 @@ from django.http import JsonResponse
 
 # Create your views here.
 
-def getModel(request):
-    return JsonResponse({'sa':'as'})
+def listModel(request):
+    
+    d = {
+    "sefa":"5",
+    "result":1
+    }
+   
+    return JsonResponse(d)
