@@ -9,6 +9,7 @@ import json
 
 @csrf_exempt
 def login(request):
+    response=dict()
     if request.method == 'POST':
         json_data = json.loads(request.body)
         username=json_data["username"]
@@ -16,20 +17,21 @@ def login(request):
 
         user = auth.authenticate(username=username,password=password)
 
+       
         if user is not None:
             auth.login(request,user)
-            print("okey")
+            response["result"]=1
         else:
-            print("kullanıcı yok")
+            response["result"]=0
+            response["message"]="Sisteme kayıtlı kullanıcı bulunamadı."
 
-    d = {
-        "result": "login"
-    }
-    return JsonResponse(d)
+    
+    return JsonResponse(response)
 
 
 @csrf_exempt
 def register(request):
+    response=dict()
     if request.method == 'POST':
         json_data = json.loads(request.body)
         username=json_data["username"]
@@ -39,15 +41,16 @@ def register(request):
         last_name=json_data["last_name"]
 
         if User.objects.filter(username=username).exists():
-            print("Kullanıcı adı alınmış.")
+            response["result"]=0
+            response["message"]="Kullanıcı adı daha önceden kullanılmıştır."
         elif User.objects.filter(email=email).exists():
-            print("Mail Alınmış")
+            response["result"]=0
+            response["message"]="E-posta adresi daha önceden kullanılmıştır."
         else:
             user=User.objects.create_user(username=username,password=password,email=email,last_name=last_name,first_name=first_name)
             user.save()
-            print("okey")
+            response["result"]=1
+            response["message"]="Hesap başarıyla oluşturulmuştur."
 
-    d = {
-        "result": "register"
-    }
-    return JsonResponse(d)
+    
+    return JsonResponse(response)

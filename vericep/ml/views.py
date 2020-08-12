@@ -1,15 +1,15 @@
 from django.http import JsonResponse
-from .models import MlModel
+from .models import MlModel,ModelInput
 
 # Create your views here.
 
 
 def listModel(request):
-    #models = MlModel.objects.all()
+    
+    response=dict()
 
-    d = {
+   
 
-        "result": "litmodel"
-    }
+   
 
-    return JsonResponse(d)
+    return JsonResponse(response)
