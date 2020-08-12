@@ -1,12 +1,11 @@
 from django.db import models
-"""
+
 # Create your models here.
-YEAR_IN_SCHOOL_CHOICES = (
-    ('FR', 'Freshman'),
-    ('SO', 'Sophomore'),
-    ('JR', 'Junior'),
-    ('SR', 'Senior'),
-)"""
+TYPE_CHOICES = (
+    ('Str', 'String'),
+    ('Int', 'İnteger'),
+    ('Db', 'Double'),
+)
 
 
 class MlModel(models.Model):
@@ -27,8 +26,16 @@ class MlModel(models.Model):
         verbose_name_plural = 'Machine Learning Model'
 
 
-"""
 class ModelInput(models.Model):
-    model_id= models.ForeignKey(MlModel,on_delete=models.CASCADE,verbose_name="ML Modeli")
-    typed=models.CharField(max_length=20,choices=YEAR_IN_SCHOOL_CHOICES)
-    description=models.TextField(verbose_name="Giriş Açıklaması")"""
+    model_id = models.ForeignKey(
+        MlModel, on_delete=models.CASCADE, verbose_name="ML Modeli")
+    input_name=models.CharField(max_length=100,verbose_name="Değişken Adı")
+    typed = models.CharField(max_length=20, choices=TYPE_CHOICES,verbose_name="Değişken Tipi")
+    description = models.TextField(verbose_name="Değişken Açıklaması")
+
+    def __str__(self):
+        return self.input_name
+
+    class Meta:
+        verbose_name = 'Model Değişkenleri'
+        verbose_name_plural = 'Model Değişkenleri'
