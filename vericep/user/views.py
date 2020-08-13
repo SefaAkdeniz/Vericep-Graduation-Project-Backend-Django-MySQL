@@ -16,16 +16,19 @@ def login(request):
         password=json_data["password"]
 
         user = auth.authenticate(username=username,password=password)
-
+        
+        
        
         if user is not None:
             auth.login(request,user)
+            userInfo = User.objects.filter(username=username).first()
+            info={"id":userInfo.pk,"first_name":userInfo.first_name,"last_name":userInfo.last_name,"email":userInfo.email,"last_login":userInfo.last_login,"date_joined":userInfo.date_joined} 
             response["result"]=1
+            response["userInfo"]=info           
         else:
             response["result"]=0
             response["message"]="Sisteme kayıtlı kullanıcı bulunamadı."
-
-    
+            
     return JsonResponse(response)
 
 
