@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import MlModel,ModelInput
+from .models import MlModel, ModelInput
 
 
 class MlModelAdmin(admin.ModelAdmin):
@@ -10,16 +10,16 @@ class MlModelAdmin(admin.ModelAdmin):
     search_fields = ('model_name', 'model_description')
     list_per_page = 10
 
+
 class ModelInputAdmin(admin.ModelAdmin):
-    list_display = ('input_name','typed','model_id')
-    list_display_links = ('input_name','model_id')
-    list_filter = ('typed','model_id')
+    list_display = ('input_name', 'typed', 'model_id')
+    list_display_links = ('input_name', 'model_id')
+    list_filter = ('typed', 'model_id')
     list_editable = ('typed',)
-    search_fields = ('input_name','typed','model_id')
+    search_fields = ('input_name', 'typed', 'model_id')
     list_per_page = 10
-    
 
 
 # Register your models here.
 admin.site.register(MlModel, MlModelAdmin)
-admin.site.register(ModelInput,ModelInputAdmin)
+admin.site.register(ModelInput, ModelInputAdmin)

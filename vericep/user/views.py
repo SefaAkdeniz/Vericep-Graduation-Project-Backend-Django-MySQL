@@ -9,51 +9,50 @@ import json
 
 @csrf_exempt
 def login(request):
-    response=dict()
+    response = dict()
     if request.method == 'POST':
         json_data = json.loads(request.body)
-        username=json_data["username"]
-        password=json_data["password"]
+        username = json_data["username"]
+        password = json_data["password"]
 
-        user = auth.authenticate(username=username,password=password)
-        
-        
-       
+        user = auth.authenticate(username=username, password=password)
+
         if user is not None:
-            auth.login(request,user)
+            auth.login(request, user)
             userInfo = User.objects.filter(username=username).first()
-            info={"id":userInfo.pk,"first_name":userInfo.first_name,"last_name":userInfo.last_name,"email":userInfo.email,"last_login":userInfo.last_login,"date_joined":userInfo.date_joined} 
-            response["result"]=1
-            response["userInfo"]=info           
+            info = {"id": userInfo.pk, "first_name": userInfo.first_name, "last_name": userInfo.last_name,
+                    "email": userInfo.email, "last_login": userInfo.last_login, "date_joined": userInfo.date_joined}
+            response["result"] = 1
+            response["userInfo"] = info
         else:
-            response["result"]=0
-            response["message"]="Sisteme kayıtlı kullanıcı bulunamadı."
-            
+            response["result"] = 0
+            response["message"] = "Sisteme kayıtlı kullanıcı bulunamadı."
+
     return JsonResponse(response)
 
 
 @csrf_exempt
 def register(request):
-    response=dict()
+    response = dict()
     if request.method == 'POST':
         json_data = json.loads(request.body)
-        username=json_data["username"]
-        email=json_data["email"]
-        password=json_data["password"]
-        first_name=json_data["first_name"]
-        last_name=json_data["last_name"]
+        username = json_data["username"]
+        email = json_data["email"]
+        password = json_data["password"]
+        first_name = json_data["first_name"]
+        last_name = json_data["last_name"]
 
         if User.objects.filter(username=username).exists():
-            response["result"]=0
-            response["message"]="Kullanıcı adı daha önceden kullanılmıştır."
+            response["result"] = 0
+            response["message"] = "Kullanıcı adı daha önceden kullanılmıştır."
         elif User.objects.filter(email=email).exists():
-            response["result"]=0
-            response["message"]="E-posta adresi daha önceden kullanılmıştır."
+            response["result"] = 0
+            response["message"] = "E-posta adresi daha önceden kullanılmıştır."
         else:
-            user=User.objects.create_user(username=username,password=password,email=email,last_name=last_name,first_name=first_name)
+            user = User.objects.create_user(
+                username=username, password=password, email=email, last_name=last_name, first_name=first_name)
             user.save()
-            response["result"]=1
-            response["message"]="Hesap başarıyla oluşturulmuştur."
+            response["result"] = 1
+            response["message"] = "Hesap başarıyla oluşturulmuştur."
 
-    
     return JsonResponse(response)

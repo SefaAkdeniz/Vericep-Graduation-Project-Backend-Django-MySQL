@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Balance,CreditCard,PastPayments
+from .models import Balance, CreditCard, PastPayments
 
 
 # Register your models here.

@@ -29,8 +29,9 @@ class MlModel(models.Model):
 class ModelInput(models.Model):
     model_id = models.ForeignKey(
         MlModel, on_delete=models.CASCADE, verbose_name="ML Modeli")
-    input_name=models.CharField(max_length=100,verbose_name="Değişken Adı")
-    typed = models.CharField(max_length=20, choices=TYPE_CHOICES,verbose_name="Değişken Tipi")
+    input_name = models.CharField(max_length=100, verbose_name="Değişken Adı")
+    typed = models.CharField(
+        max_length=20, choices=TYPE_CHOICES, verbose_name="Değişken Tipi")
     description = models.TextField(verbose_name="Değişken Açıklaması")
 
     def __str__(self):
