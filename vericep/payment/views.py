@@ -18,8 +18,8 @@ def addCard(request):
             expiration_date_month = json_data["expiration_date_month"]
             expiration_date_year = json_data["expiration_date_year"]
             cvc = json_data["cvc"]
-            User_ = User.objects.filter(id=user_id).first()
-            card = CreditCard(user=User_, card_name=card_name, card_number=card_number,
+            user_ = User.objects.filter(id=user_id).first()
+            card = CreditCard(user=user_, card_name=card_name, card_number=card_number,
                               expiration_date_month=expiration_date_month, expiration_date_year=expiration_date_year, cvc=cvc)
             card.save()
             response["result"] = 1
@@ -34,6 +34,19 @@ def addCard(request):
 
 def listCard(request):
     response = dict()
+    card_list=[]
+    count=0
+    if request.method == 'POST':
+        json_data = json.loads(request.body)
+        user_id=json_data["user_id"]
+        user_ = User.objects.filter(id=user_id).first()
+        cards=CreditCard.objects.filter(user=user_)
+        for each in cards:
+            count=count+1
+            card={"id":each.pk,"card_name":each.card_name,"card_number":each.card_number,"expiration_date_month":each.expiration_date_month,"expiration_date_year":each.expiration_date_year,"cvc":each.cvc}
+            card_list.append(card)
+    response["cardCount"]=count
+    response["cards"]=card_list
     return JsonResponse(response)
 
 

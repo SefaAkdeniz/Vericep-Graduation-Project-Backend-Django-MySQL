@@ -63,9 +63,6 @@ class PastPayments(models.Model):
     card = models.ForeignKey(
         CreditCard, on_delete=models.CASCADE, verbose_name='Kullanılan Kart')
 
-    def __str__(self):
-        return str(self.date)
-
     class Meta():
         verbose_name = 'Geçmiş Ödemeler'
         verbose_name_plural = 'Geçmiş Ödemeler'
