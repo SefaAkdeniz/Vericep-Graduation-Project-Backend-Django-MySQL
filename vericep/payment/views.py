@@ -3,6 +3,7 @@ from .models import PastPayments, Balance, CreditCard
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 import json
+from decimal import Decimal
 
 
 # Create your views here.
@@ -31,7 +32,7 @@ def addCard(request):
 
             return JsonResponse(response)
 
-
+@csrf_exempt
 def listCard(request):
     response = dict()
     card_list=[]
@@ -49,17 +50,51 @@ def listCard(request):
     response["cards"]=card_list
     return JsonResponse(response)
 
-
+@csrf_exempt
 def getBalance(request):
     response = dict()
+    
+    if request.method == 'POST':
+        json_data = json.loads(request.body)
+        user_id=json_data["user_id"]
+        user_ = User.objects.filter(id=user_id).first()
+        balance=Balance.objects.filter(user=user_).first()
+        try:
+            response["result"]=1
+            response["amaount"]=balance.amaount
+        except:
+            response["result"]=0
+
+        
+
     return JsonResponse(response)
 
-
+@csrf_exempt
 def setBalance(request):
     response = dict()
+    if request.method == 'POST':
+        json_data = json.loads(request.body)
+        user_id=json_data["user_id"]
+        process_price=json_data["process_price"]
+        user_ = User.objects.filter(id=user_id).first()
+        balance=Balance.objects.filter(user=user_).first()
+        try:
+            balance.amaount+=Decimal(process_price)
+            if balance.amaount<0:
+                response["result"]=0
+                response["message"]="Bakiye Yetersiz."
+                return JsonResponse(response)
+
+            balance.save()
+            response["result"]=1
+            response["message"]="İşlem Başarılı."
+        except:
+            response["result"]=0
+            response["message"]="İşlem Başarısız."
+
     return JsonResponse(response)
 
-
+@csrf_exempt
 def listPastPayments(request):
     response = dict()
     return JsonResponse(response)
