@@ -8,4 +8,3 @@ urlpatterns = [
     path('setBalance/', views.setBalance, name='setBalance'),
     path('listPastPayments/', views.listPastPayments, name='listPastPayments')
 ]
-

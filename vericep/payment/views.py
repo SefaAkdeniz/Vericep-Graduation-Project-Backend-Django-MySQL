@@ -96,5 +96,28 @@ def setBalance(request):
 
 @csrf_exempt
 def listPastPayments(request):
+    payment_list=[]
+    count=0
+    total_payment_price=0
     response = dict()
+    if request.method == 'POST':
+        json_data = json.loads(request.body)
+        user_id=json_data["user_id"]
+        user_ = User.objects.filter(id=user_id).first()
+        cards=CreditCard.objects.filter(user=user_)
+
+        for card in cards:
+            payments=PastPayments.objects.filter(card=card)
+            cardInfo={"id":card.pk,"card_name":card.card_name,"card_number":card.card_number,"expiration_date_month":card.expiration_date_month,"expiration_date_year":card.expiration_date_year,"cvc":card.cvc}
+            for each in payments:
+
+                payment={"id":each.pk,"date":each.date,"amount":each.amaount,"payment_card":cardInfo}
+                payment_list.append(payment)
+                count+=1
+                total_payment_price+=each.amaount
+            
+
+    response["paymentCount"]=count
+    response["totalPaymentPrice"]=total_payment_price
+    response["payments"]=payment_list
     return JsonResponse(response)
