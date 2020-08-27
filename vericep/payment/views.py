@@ -24,13 +24,9 @@ def addCard(request):
                               expiration_date_month=expiration_date_month, expiration_date_year=expiration_date_year, cvc=cvc)
             card.save()
             response["result"] = 1
-            response["message"] = "İşlem Başarıyla Gerçekleştirildi."
-            return JsonResponse(response)
-
         except:
             response["result"] = 0
-
-            return JsonResponse(response)
+    return JsonResponse(response)
 
 @csrf_exempt
 def listCard(request):
@@ -38,60 +34,58 @@ def listCard(request):
     card_list=[]
     count=0
     if request.method == 'POST':
-        json_data = json.loads(request.body)
-        user_id=json_data["user_id"]
-        user_ = User.objects.filter(id=user_id).first()
-        cards=CreditCard.objects.filter(user=user_)
-        for each in cards:
-            count=count+1
-            card={"id":each.pk,"card_name":each.card_name,"card_number":each.card_number,"expiration_date_month":each.expiration_date_month,"expiration_date_year":each.expiration_date_year,"cvc":each.cvc}
-            card_list.append(card)
-    response["cardCount"]=count
-    response["cards"]=card_list
+        try:
+            json_data = json.loads(request.body)
+            user_id=json_data["user_id"]
+            user_ = User.objects.filter(id=user_id).first()
+            cards=CreditCard.objects.filter(user=user_)
+            for each in cards:
+                count=count+1
+                card={"id":each.pk,"card_name":each.card_name,"card_number":each.card_number,"expiration_date_month":each.expiration_date_month,"expiration_date_year":each.expiration_date_year,"cvc":each.cvc}
+                card_list.append(card)
+            response["result"] = 1
+            response["cardCount"]=count
+            response["cards"]=card_list   
+        except:
+            response["result"] = 0
     return JsonResponse(response)
 
 @csrf_exempt
 def getBalance(request):
     response = dict()
-    
     if request.method == 'POST':
-        json_data = json.loads(request.body)
-        user_id=json_data["user_id"]
-        user_ = User.objects.filter(id=user_id).first()
-        balance=Balance.objects.filter(user=user_).first()
         try:
+            json_data = json.loads(request.body)
+            user_id=json_data["user_id"]
+            user_ = User.objects.filter(id=user_id).first()
+            balance=Balance.objects.filter(user=user_).first()
             response["result"]=1
             response["amaount"]=balance.amaount
         except:
             response["result"]=0
-
-        
-
     return JsonResponse(response)
 
 @csrf_exempt
 def setBalance(request):
     response = dict()
     if request.method == 'POST':
-        json_data = json.loads(request.body)
-        user_id=json_data["user_id"]
-        process_price=json_data["process_price"]
-        user_ = User.objects.filter(id=user_id).first()
-        balance=Balance.objects.filter(user=user_).first()
         try:
+            json_data = json.loads(request.body)
+            user_id=json_data["user_id"]
+            process_price=json_data["process_price"]
+            user_ = User.objects.filter(id=user_id).first()
+            balance=Balance.objects.filter(user=user_).first()
             balance.amaount+=Decimal(process_price)
             if balance.amaount<0:
                 response["result"]=0
                 response["message"]="Bakiye Yetersiz."
                 return JsonResponse(response)
-
             balance.save()
             response["result"]=1
             response["message"]="İşlem Başarılı."
         except:
             response["result"]=0
             response["message"]="İşlem Başarısız."
-
     return JsonResponse(response)
 
 @csrf_exempt
@@ -101,23 +95,25 @@ def listPastPayments(request):
     total_payment_price=0
     response = dict()
     if request.method == 'POST':
-        json_data = json.loads(request.body)
-        user_id=json_data["user_id"]
-        user_ = User.objects.filter(id=user_id).first()
-        cards=CreditCard.objects.filter(user=user_)
+        try:
+            json_data = json.loads(request.body)
+            user_id=json_data["user_id"]
+            user_ = User.objects.filter(id=user_id).first()
+            cards=CreditCard.objects.filter(user=user_)
 
-        for card in cards:
-            payments=PastPayments.objects.filter(card=card)
-            cardInfo={"id":card.pk,"card_name":card.card_name,"card_number":card.card_number,"expiration_date_month":card.expiration_date_month,"expiration_date_year":card.expiration_date_year,"cvc":card.cvc}
-            for each in payments:
+            for card in cards:
+                payments=PastPayments.objects.filter(card=card)
+                cardInfo={"id":card.pk,"card_name":card.card_name,"card_number":card.card_number,"expiration_date_month":card.expiration_date_month,"expiration_date_year":card.expiration_date_year,"cvc":card.cvc}
+                for each in payments:
 
-                payment={"id":each.pk,"date":each.date,"amount":each.amaount,"payment_card":cardInfo}
-                payment_list.append(payment)
-                count+=1
-                total_payment_price+=each.amaount
-            
-
-    response["paymentCount"]=count
-    response["totalPaymentPrice"]=total_payment_price
-    response["payments"]=payment_list
+                    payment={"id":each.pk,"date":each.date,"amount":each.amaount,"payment_card":cardInfo}
+                    payment_list.append(payment)
+                    count+=1
+                    total_payment_price+=each.amaount
+            response["result"]=1
+            response["paymentCount"]=count
+            response["totalPaymentPrice"]=total_payment_price
+            response["payments"]=payment_list
+        except:
+            response["result"]=0
     return JsonResponse(response)

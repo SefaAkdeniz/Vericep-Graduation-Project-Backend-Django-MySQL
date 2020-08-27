@@ -30,7 +30,7 @@ class Balance(models.Model):
     user = models.ForeignKey(
         "auth.User", on_delete=models.CASCADE, verbose_name='Kullanıcı')
     amaount = models.DecimalField(
-        decimal_places=2, max_digits=5, verbose_name="Bakiye")
+        decimal_places=2, max_digits=11, verbose_name="Bakiye")
 
     class Meta():
         verbose_name = 'Bakiyeler'
