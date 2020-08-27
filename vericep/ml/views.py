@@ -10,6 +10,7 @@ def listModel(request):
     model_list = []
     input_list = []
     count = 0
+    
 
     models = MlModel.objects.all()
 
@@ -19,6 +20,7 @@ def listModel(request):
             input_list = list()
             count = count+1
             inputs = ModelInput.objects.filter(model_id=each.pk)
+            
             for each2 in inputs:
                 count2 = count2+1
                 input_ = {"id": each2.pk, "name": each2.input_name,
