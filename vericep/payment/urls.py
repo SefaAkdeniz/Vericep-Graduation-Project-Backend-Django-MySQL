@@ -6,5 +6,6 @@ urlpatterns = [
     path('listCard/', views.listCard, name='listCard'),
     path('getBalance/', views.getBalance, name='getBalance'),
     path('setBalance/', views.setBalance, name='setBalance'),
+    path('addPayments/', views.addPayments, name='addPayments'),
     path('listPastPayments/', views.listPastPayments, name='listPastPayments')
 ]

@@ -89,6 +89,31 @@ def setBalance(request):
     return JsonResponse(response)
 
 @csrf_exempt
+def addPayments(request):
+    response = dict()
+    if request.method == 'POST':
+        try:
+            json_data = json.loads(request.body)
+            user_id=json_data["user_id"]
+            add_amaount=json_data["add_amaount"]
+            card_id=json_data["card_id"]
+            user_ = User.objects.filter(id=user_id).first()
+            balance=Balance.objects.filter(user=user_).first()
+            balance.amaount+=Decimal(add_amaount)
+            balance.save()
+            card=CreditCard.objects.filter(id=card_id).first()
+
+            payment = PastPayments(amaount=add_amaount,card=card)
+            payment.save()
+            
+            response["result"]=1
+            
+        except:
+            response["result"]=0
+    return JsonResponse(response)
+
+
+@csrf_exempt
 def listPastPayments(request):
     payment_list=[]
     count=0
