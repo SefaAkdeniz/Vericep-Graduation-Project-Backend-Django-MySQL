@@ -24,8 +24,10 @@ def addCard(request):
                               expiration_date_month=expiration_date_month, expiration_date_year=expiration_date_year, cvc=cvc)
             card.save()
             response["result"] = 1
+            response["message"]="İşlem Başarılı."
         except:
             response["result"] = 0
+            response["message"]="İşlem Başarısız."
     return JsonResponse(response)
 
 @csrf_exempt
@@ -44,10 +46,12 @@ def listCard(request):
                 card={"id":each.pk,"card_name":each.card_name,"card_number":each.card_number,"expiration_date_month":each.expiration_date_month,"expiration_date_year":each.expiration_date_year,"cvc":each.cvc}
                 card_list.append(card)
             response["result"] = 1
+            response["message"]="İşlem Başarılı."
             response["cardCount"]=count
             response["cards"]=card_list   
         except:
             response["result"] = 0
+            response["message"]="İşlem Başarısız."
     return JsonResponse(response)
 
 @csrf_exempt
@@ -60,9 +64,11 @@ def getBalance(request):
             user_ = User.objects.filter(id=user_id).first()
             balance=Balance.objects.filter(user=user_).first()
             response["result"]=1
+            response["message"]="İşlem Başarılı."
             response["amaount"]=balance.amaount
         except:
             response["result"]=0
+            response["message"]="İşlem Başarısız."
     return JsonResponse(response)
 
 @csrf_exempt
@@ -97,19 +103,24 @@ def addPayments(request):
             user_id=json_data["user_id"]
             add_amaount=json_data["add_amaount"]
             card_id=json_data["card_id"]
+            verification_cvc=json_data["verification_cvc"]
             user_ = User.objects.filter(id=user_id).first()
             balance=Balance.objects.filter(user=user_).first()
             balance.amaount+=Decimal(add_amaount)
             balance.save()
             card=CreditCard.objects.filter(id=card_id).first()
+            if int(verification_cvc)!=int(card.cvc):
+                response["result"]=0
+                response["message"]="CVC Numarası Doğrulanamadı."
+                return JsonResponse(response)
 
             payment = PastPayments(amaount=add_amaount,card=card)
             payment.save()
-            
             response["result"]=1
-            
+            response["message"]="İşlem Başarılı."
         except:
             response["result"]=0
+            response["message"]="İşlem Başarısız."
     return JsonResponse(response)
 
 
@@ -136,9 +147,11 @@ def listPastPayments(request):
                     count+=1
                     total_payment_price+=each.amaount
             response["result"]=1
+            response["message"]="İşlem Başarılı."
             response["paymentCount"]=count
             response["totalPaymentPrice"]=total_payment_price
             response["payments"]=payment_list
         except:
             response["result"]=0
+            response["message"]="İşlem Başarısız."
     return JsonResponse(response)
