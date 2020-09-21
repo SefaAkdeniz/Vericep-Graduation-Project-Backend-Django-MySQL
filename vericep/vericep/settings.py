@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'user',
     'ml',
     'payment',
+    'analysis',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
