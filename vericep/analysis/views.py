@@ -8,20 +8,24 @@ import json
 def create(request):
     response = dict()
     if request.method == 'POST':
-        a=request.FILES["data"]
+        
+        csv_file=request.FILES["data"]
+        
+        print(csv_file.name)
+        
+        a=request.POST["user_id"]
         print(a)
+        handle_uploaded_file(csv_file)
+        
+        response["result"] = 1
+        response["message"]="İşlem Başarılı."
        
-        try:
-            json_data = json.loads(request.body)
-            user_id = json_data["user_id"]
-            data = json_data["data"]
-            response["result"] = 1
-            response["message"]="İşlem Başarılı."
-            print(type(data))
-        except:
-            response["result"] = 0
-            response["message"]="İşlem Başarısız."
-    
 
 
     return JsonResponse(response)
+
+
+def handle_uploaded_file(f):  
+    with open('uploads/'+f.name, 'wb+') as destination:  
+        for chunk in f.chunks():  
+            destination.write(chunk)  
