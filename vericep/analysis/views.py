@@ -1,5 +1,7 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from .models import Analysis
+from django.contrib.auth.models import User
 import json
 
 # Create your views here.
@@ -12,10 +14,17 @@ def create(request):
         csv_file=request.FILES["data"]
         
         print(csv_file.name)
+        file_format = "."+csv_file.name.split('.')[1]
+        print(file_format)
         
-        a=request.POST["user_id"]
-        print(a)
-        handle_uploaded_file(csv_file)
+        user_id=request.POST["user_id"]
+
+        user_ = User.objects.filter(id=user_id).first()
+        analysis = Analysis(user=user_)
+        analysis.save()
+        print(analysis.pk)
+        
+        handle_uploaded_file(csv_file,analysis.pk,file_format)
         
         response["result"] = 1
         response["message"]="İşlem Başarılı."
@@ -25,7 +34,7 @@ def create(request):
     return JsonResponse(response)
 
 
-def handle_uploaded_file(f):  
-    with open('uploads/'+f.name, 'wb+') as destination:  
+def handle_uploaded_file(f,id,file_format):  
+    with open('uploads/'+str(id)+file_format, 'wb+') as destination:  
         for chunk in f.chunks():  
             destination.write(chunk)  
