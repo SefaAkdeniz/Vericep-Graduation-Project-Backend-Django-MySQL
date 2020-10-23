@@ -25,6 +25,7 @@ def create(request):
         print(analysis.pk)
         
         handle_uploaded_file(csv_file,analysis.pk,file_format)
+        create_analysis(str(analysis.pk)+str(file_format))
         
         response["result"] = 1
         response["message"]="İşlem Başarılı."
@@ -38,3 +39,14 @@ def handle_uploaded_file(f,id,file_format):
     with open('uploads/'+str(id)+file_format, 'wb+') as destination:  
         for chunk in f.chunks():  
             destination.write(chunk)  
+
+def create_analysis(file_name):
+    import pandas as pd
+    import pandas_profiling as pp
+
+    df = pd.read_csv("uploads/"+file_name)
+    report = pp.ProfileReport(df)
+
+    report.to_file("report.html")
+
+  
