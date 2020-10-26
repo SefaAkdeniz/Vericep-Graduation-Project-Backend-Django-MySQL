@@ -4,6 +4,7 @@ from .models import Analysis
 from django.contrib.auth.models import User
 import json
 
+
 # Create your views here.
 
 @csrf_exempt
@@ -25,7 +26,10 @@ def create(request):
         print(analysis.pk)
         
         handle_uploaded_file(csv_file,analysis.pk,file_format)
+
         create_analysis(str(analysis.pk)+str(file_format))
+        
+        
         
         response["result"] = 1
         response["message"]="İşlem Başarılı."
@@ -40,7 +44,9 @@ def handle_uploaded_file(f,id,file_format):
         for chunk in f.chunks():  
             destination.write(chunk)  
 
-def create_analysis(file_name):
+
+
+async def create_analysis(file_name):
     import pandas as pd
     import pandas_profiling as pp
 
@@ -48,5 +54,6 @@ def create_analysis(file_name):
     report = pp.ProfileReport(df)
 
     report.to_file("report.html")
+    
 
   
