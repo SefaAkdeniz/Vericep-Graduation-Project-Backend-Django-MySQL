@@ -3,6 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import Analysis
 from django.contrib.auth.models import User
 import json
+import os
 
 
 # Create your views here.
@@ -24,17 +25,12 @@ def create(request):
         analysis = Analysis(user=user_)
         analysis.save()
         print(analysis.pk)
-        
-        handle_uploaded_file(csv_file,analysis.pk,file_format)
 
+        handle_uploaded_file(csv_file,analysis.pk,file_format)
         create_analysis(str(analysis.pk)+str(file_format))
-        
-        
         
         response["result"] = 1
         response["message"]="İşlem Başarılı."
-       
-
 
     return JsonResponse(response)
 
@@ -46,14 +42,13 @@ def handle_uploaded_file(f,id,file_format):
 
 
 
-async def create_analysis(file_name):
+def create_analysis(file_name):
     import pandas as pd
     import pandas_profiling as pp
 
     df = pd.read_csv("uploads/"+file_name)
     report = pp.ProfileReport(df)
-
-    report.to_file("report.html")
-    
-
+    os.chdir('outputs/')
+    report.to_file(file_name.split(".")[0]+".html")
+    os.chdir('../')
   
