@@ -4,6 +4,7 @@ from .models import Analysis
 from django.contrib.auth.models import User
 import json
 import os
+from . import sendMail
 
 
 # Create your views here.
@@ -14,11 +15,10 @@ def create(request):
     if request.method == 'POST':
         
         csv_file=request.FILES["data"]
-        
-        print(csv_file.name)
+
         file_format = "."+csv_file.name.split('.')[1]
         print(file_format)
-        
+      
         user_id=request.POST["user_id"]
 
         user_ = User.objects.filter(id=user_id).first()
@@ -29,6 +29,8 @@ def create(request):
         handle_uploaded_file(csv_file,analysis.pk,file_format)
         create_analysis(str(analysis.pk)+str(file_format))
         
+        sendMail.send_test_mail(user_.email,str(analysis.pk))
+
         response["result"] = 1
         response["message"]="İşlem Başarılı."
 

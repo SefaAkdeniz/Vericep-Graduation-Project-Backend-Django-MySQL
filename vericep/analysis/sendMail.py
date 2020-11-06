@@ -1,15 +1,28 @@
-import os
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.image import MIMEImage
+from email.mime.application import MIMEApplication
+from . import accountInfo
 
-message = Mail(
-    from_email='ismailsefa.akdnz@gmail.com',
-    to_emails='ismailsefa.akdnz@gmail.com',
-    subject='Sending with Twilio SendGrid is Fun',
-    html_content='<strong>and easy to do anywhere, even with Python</strong>')
+def send_test_mail(email,id):
+    msg = MIMEMultipart()
+    msg['Subject'] = 'Vericep Analysis Result'
+    msg['From'] = accountInfo.mail
+    msg['To'] = email
 
-sg = SendGridAPIClient('api-key')
-response = sg.send(message)
-print(response.status_code)
-print(response.body)
-print(response.headers)
+    msgText = MIMEText('<b>Vericep Analysis Result</b>', 'html')
+    msg.attach(msgText)
+        
+    pdf = MIMEApplication(open("outputs/"+str(id)+".html", 'rb').read())
+    pdf.add_header('Content-Disposition', 'attachment', filename= "analysis.html")
+    msg.attach(pdf)
+
+    try:
+        with smtplib.SMTP("smtp.gmail.com", 587) as smtpObj:
+            smtpObj.ehlo()
+            smtpObj.starttls()
+            smtpObj.login(accountInfo.mail, accountInfo.password)
+            smtpObj.sendmail(accountInfo.mail, email, msg.as_string())
+    except Exception as e:
+        print(e)
