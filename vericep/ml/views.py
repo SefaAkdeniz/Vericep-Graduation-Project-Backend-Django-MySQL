@@ -31,7 +31,8 @@ def listModel(request):
         response["modelCount"] = count
         response["models"] = model_list
         return JsonResponse(response)
-    except:
+    except Exception as e:
         response["result"] = 0
+        response["message"] = str(e)
         return JsonResponse(response)
         

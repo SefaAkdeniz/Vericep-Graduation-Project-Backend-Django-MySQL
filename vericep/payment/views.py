@@ -25,9 +25,9 @@ def addCard(request):
             card.save()
             response["result"] = 1
             response["message"]="İşlem Başarılı."
-        except:
+        except Exception as e:
             response["result"] = 0
-            response["message"]="İşlem Başarısız."
+            response["message"] = str(e)
     return JsonResponse(response)
 
 @csrf_exempt
@@ -49,9 +49,9 @@ def listCard(request):
             response["message"]="İşlem Başarılı."
             response["cardCount"]=count
             response["cards"]=card_list   
-        except:
+        except Exception as e:
             response["result"] = 0
-            response["message"]="İşlem Başarısız."
+            response["message"] = str(e)
     return JsonResponse(response)
 
 @csrf_exempt
@@ -66,9 +66,9 @@ def getBalance(request):
             response["result"]=1
             response["message"]="İşlem Başarılı."
             response["amaount"]=balance.amaount
-        except:
+        except Exception as e:
             response["result"]=0
-            response["message"]="İşlem Başarısız."
+            response["message"] = str(e)
     return JsonResponse(response)
 
 @csrf_exempt
@@ -89,9 +89,9 @@ def setBalance(request):
             balance.save()
             response["result"]=1
             response["message"]="İşlem Başarılı."
-        except:
+        except Exception as e:
             response["result"]=0
-            response["message"]="İşlem Başarısız."
+            response["message"] = str(e)
     return JsonResponse(response)
 
 @csrf_exempt
@@ -118,9 +118,9 @@ def addPayments(request):
             payment.save()
             response["result"]=1
             response["message"]="İşlem Başarılı."
-        except:
+        except Exception as e:
             response["result"]=0
-            response["message"]="İşlem Başarısız."
+            response["message"] = str(e)
     return JsonResponse(response)
 
 
@@ -151,7 +151,7 @@ def listPastPayments(request):
             response["paymentCount"]=count
             response["totalPaymentPrice"]=total_payment_price
             response["payments"]=payment_list
-        except:
+        except Exception as e:
             response["result"]=0
-            response["message"]="İşlem Başarısız."
+            response["message"] = str(e)
     return JsonResponse(response)

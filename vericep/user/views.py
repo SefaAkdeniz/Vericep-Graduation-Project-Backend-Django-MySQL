@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import auth
 import json
+from payment.models import  Balance
 
 # Create your views here.
 
@@ -52,6 +53,8 @@ def register(request):
             user = User.objects.create_user(
                 username=username, password=password, email=email, last_name=last_name, first_name=first_name)
             user.save()
+            balance = Balance(user=user, amaount=0)
+            balance.save()
             response["result"] = 1
             response["message"] = "Hesap başarıyla oluşturulmuştur."
 
