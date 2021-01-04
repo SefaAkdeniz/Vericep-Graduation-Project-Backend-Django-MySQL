@@ -17,7 +17,12 @@ def create(request):
         csv_file = request.FILES["data"]
 
         file_format = "."+csv_file.name.split('.')[1]
-        print(file_format)
+
+        if file_format !=".csv":
+            response["result"] = 0
+            response["message"] = "Geçersiz dosya formatı."
+
+            return JsonResponse(response)
 
         user_id = request.POST["user_id"]
 
