@@ -1,2 +1,2 @@
-mail="Vericep.Analysis@gmail.com"
-password="~qJHUcD`r9SkTN2?"
+mail = "Vericep.Analysis@gmail.com"
+password = "~qJHUcD`r9SkTN2?"

@@ -5,7 +5,8 @@ from email.mime.image import MIMEImage
 from email.mime.application import MIMEApplication
 from . import accountInfo
 
-def send_test_mail(email,id):
+
+def send_test_mail(email, id):
     msg = MIMEMultipart()
     msg['Subject'] = 'Vericep Analysis Result'
     msg['From'] = accountInfo.mail
@@ -13,9 +14,10 @@ def send_test_mail(email,id):
 
     msgText = MIMEText('<b>Vericep Analysis Result</b>', 'html')
     msg.attach(msgText)
-        
+
     pdf = MIMEApplication(open("outputs/"+str(id)+".html", 'rb').read())
-    pdf.add_header('Content-Disposition', 'attachment', filename= "analysis.html")
+    pdf.add_header('Content-Disposition', 'attachment',
+                   filename="analysis.html")
     msg.attach(pdf)
 
     try:
