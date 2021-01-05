@@ -100,7 +100,7 @@ def setBalance(request):
 
 
 @csrf_exempt
-def addPayments(request):
+def doPayment(request):
     response = dict()
     if request.method == 'POST':
         try:
