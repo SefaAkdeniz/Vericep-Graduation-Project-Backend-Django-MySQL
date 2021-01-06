@@ -30,6 +30,27 @@ def addCard(request):
             response["message"] = str(e)
     return JsonResponse(response)
 
+@csrf_exempt
+def deleteCard(request):
+    response = dict()
+    if request.method == 'POST':
+        try:
+            json_data = json.loads(request.body)
+            card_id = json_data["card_id"]
+            print(card_id)
+            if CreditCard.objects.filter(id=card_id).exists():
+                pass
+            else:
+                response["result"] = 0
+                response["message"] = "Kart bulunamadı."
+                return JsonResponse(response)
+            card = CreditCard.objects.filter(id=card_id).delete()
+            response["result"] = 1
+            response["message"] = "İşlem Başarılı."
+        except Exception as e:
+            response["result"] = 0
+            response["message"] = str(e)
+    return JsonResponse(response)
 
 @csrf_exempt
 def listCard(request):
