@@ -35,7 +35,6 @@ def login(request):
 
 @csrf_exempt
 def register(request):
-    response = dict()
     if request.method == 'POST':
         json_data = json.loads(request.body)
         username = json_data["username"]
@@ -44,28 +43,10 @@ def register(request):
         first_name = json_data["first_name"].capitalize()
         last_name = json_data["last_name"].capitalize()
 
-        if User.objects.filter(username=username).exists():
-            response["result"] = 0
-            response["message"] = "Kullanıcı adı daha önceden kullanılmıştır."
-        elif User.objects.filter(email=email).exists():
-            response["result"] = 0
-            response["message"] = "E-posta adresi daha önceden kullanılmıştır."
-        elif len(first_name) < 2:
-            response["result"] = 0
-            response["message"] = "İsim 2 karakterden kısa olamaz."
-        elif len(last_name) < 2:
-            response["result"] = 0
-            response["message"] = "Soyisim 2 karakterden kısa olamaz."
-        elif len(password) < 8:
-            response["result"] = 0
-            response["message"] = "Şifre 8 karakterden kısa olamaz."
-        elif len(username) < 3:
-            response["result"] = 0
-            response["message"] = "Kullanıcı adı 3 karakterden kısa olamaz."
-        elif checkMailFormat(email):
-            response["result"] = 0
-            response["message"] = "E-Posta adresi uygun formatta değil."
-        else:
+        response = validatorForm(
+            first_name, last_name, username, password, email)
+
+        if not bool(response):
             user = User.objects.create_user(
                 username=username, password=password, email=email, last_name=last_name, first_name=first_name)
             user.save()
@@ -76,39 +57,62 @@ def register(request):
 
     return JsonResponse(response)
 
+
+def validatorForm(first_name, last_name, username, password, email, oldUsername="", oldEmail=""):
+    print(bool(oldUsername))
+    response = dict()
+    if User.objects.filter(username=username).exists():
+        if oldUsername != username:
+            response["result"] = 0
+            response["message"] = "Kullanıcı adı daha önceden kullanılmıştır."
+    elif User.objects.filter(email=email).exists():
+        if oldEmail != email:
+            response["result"] = 0
+            response["message"] = "E-posta adresi daha önceden kullanılmıştır."
+    elif len(first_name) < 2:
+        response["result"] = 0
+        response["message"] = "İsim 2 karakterden kısa olamaz."
+    elif len(last_name) < 2:
+        response["result"] = 0
+        response["message"] = "Soyisim 2 karakterden kısa olamaz."
+    elif len(password) < 8:
+        response["result"] = 0
+        response["message"] = "Şifre 8 karakterden kısa olamaz."
+    elif len(username) < 3:
+        response["result"] = 0
+        response["message"] = "Kullanıcı adı 3 karakterden kısa olamaz."
+    elif checkMailFormat(email):
+        response["result"] = 0
+        response["message"] = "E-Posta adresi uygun formatta değil."
+    return response
+
+
 @csrf_exempt
 def updateAccount(request):
-    response = dict()
     if request.method == 'POST':
         json_data = json.loads(request.body)
         username = json_data["username"]
         user_id = json_data["user_id"]
+        email = json_data["email"]
         password = json_data["password"]
         first_name = json_data["first_name"].capitalize()
         last_name = json_data["last_name"].capitalize()
 
-        if User.objects.filter(username=username).exists():
-            response["result"] = 0
-            response["message"] = "Kullanıcı adı daha önceden kullanılmıştır."
-        elif len(first_name) < 2:
-            response["result"] = 0
-            response["message"] = "İsim 2 karakterden kısa olamaz."
-        elif len(last_name) < 2:
-            response["result"] = 0
-            response["message"] = "Soyisim 2 karakterden kısa olamaz."
-        elif len(password) < 8:
-            response["result"] = 0
-            response["message"] = "Şifre 8 karakterden kısa olamaz."
-        elif len(username) < 3:
-            response["result"] = 0
-            response["message"] = "Kullanıcı adı 3 karakterden kısa olamaz."
-        else:
-            user = User(id=user_id,username=username, password=password,last_name=last_name, first_name=first_name)
+        user_ = User.objects.filter(id=user_id).first()
+
+        response = validatorForm(
+            first_name, last_name, username, password, email, user_.username, user_.email)
+
+        if not bool(response):
+            user = User(id=user_id, username=username,
+                        last_name=last_name, first_name=first_name, email=email)
+            user.set_password(password)
             user.save()
             response["result"] = 1
             response["message"] = "Hesap başarıyla güncellendi."
 
     return JsonResponse(response)
+
 
 def checkMailFormat(email):
     regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
