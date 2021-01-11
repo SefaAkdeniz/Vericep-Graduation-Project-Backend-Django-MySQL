@@ -65,7 +65,7 @@ def listCard(request):
             cards = CreditCard.objects.filter(user=user_)
             for each in cards:
                 cardCount += 1
-                card = {"id": each.pk, "card_name": each.card_name, "card_number": each.card_number,
+                card = {"id": each.pk, "name": each.card_name, "card_number": each.card_number,
                         "expiration_date_month": each.expiration_date_month, "expiration_date_year": each.expiration_date_year, "cvc": each.cvc}
                 card_list.append(card)
             response["result"] = 1
@@ -165,7 +165,7 @@ def listPastPayments(request):
 
             for card in cards:
                 payments = PastPayments.objects.filter(card=card)
-                cardInfo = {"id": card.pk, "card_name": card.card_name, "card_number": card.card_number,
+                cardInfo = {"id": card.pk, "name": card.card_name, "card_number": card.card_number,
                             "expiration_date_month": card.expiration_date_month, "expiration_date_year": card.expiration_date_year, "cvc": card.cvc}
                 for each in payments:
 

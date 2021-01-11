@@ -59,29 +59,28 @@ def register(request):
 
 
 def validatorForm(first_name, last_name, username, password, email, oldUsername="", oldEmail=""):
-    print(bool(oldUsername))
     response = dict()
     if User.objects.filter(username=username).exists():
         if oldUsername != username:
             response["result"] = 0
             response["message"] = "Kullanıcı adı daha önceden kullanılmıştır."
-    elif User.objects.filter(email=email).exists():
+    if User.objects.filter(email=email).exists():
         if oldEmail != email:
             response["result"] = 0
             response["message"] = "E-posta adresi daha önceden kullanılmıştır."
-    elif len(first_name) < 2:
+    if len(first_name) < 2:
         response["result"] = 0
         response["message"] = "İsim 2 karakterden kısa olamaz."
-    elif len(last_name) < 2:
+    if len(last_name) < 2:
         response["result"] = 0
         response["message"] = "Soyisim 2 karakterden kısa olamaz."
-    elif len(password) < 8:
+    if len(password) < 8:
         response["result"] = 0
         response["message"] = "Şifre 8 karakterden kısa olamaz."
-    elif len(username) < 3:
+    if len(username) < 3:
         response["result"] = 0
         response["message"] = "Kullanıcı adı 3 karakterden kısa olamaz."
-    elif checkMailFormat(email):
+    if checkMailFormat(email):
         response["result"] = 0
         response["message"] = "E-Posta adresi uygun formatta değil."
     return response
@@ -110,6 +109,27 @@ def updateAccount(request):
             user.save()
             response["result"] = 1
             response["message"] = "Hesap başarıyla güncellendi."
+
+    return JsonResponse(response)
+
+
+@csrf_exempt
+def getAccountInfo(request):
+    response = dict()
+    if request.method == 'POST':
+        json_data = json.loads(request.body)
+        user_id = json_data["user_id"]
+
+        user = User.objects.filter(id=user_id).first()
+
+        if user is not None:
+            userInfo = {"id": user.pk, "first_name": user.first_name, "last_name": user.last_name,
+                        "email": user.email, "last_login": user.last_login, "date_joined": user.date_joined, "username": user.username}
+            response["result"] = 1
+            response["userInfo"] = userInfo
+        else:
+            response["result"] = 0
+            response["message"] = "Sisteme kayıtlı kullanıcı bulunamadı."
 
     return JsonResponse(response)
 
