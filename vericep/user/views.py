@@ -98,13 +98,14 @@ def updateAccount(request):
         last_name = json_data["last_name"].capitalize()
 
         user_ = User.objects.filter(id=user_id).first()
+        date_joined = user_.date_joined
 
         response = validatorForm(
             first_name, last_name, username, password, email, user_.username, user_.email)
 
         if not bool(response):
             user = User(id=user_id, username=username,
-                        last_name=last_name, first_name=first_name, email=email)
+                        last_name=last_name, first_name=first_name, email=email, date_joined=date_joined)
             user.set_password(password)
             user.save()
             response["result"] = 1

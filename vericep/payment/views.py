@@ -30,6 +30,7 @@ def addCard(request):
             response["message"] = str(e)
     return JsonResponse(response)
 
+
 @csrf_exempt
 def deleteCard(request):
     response = dict()
@@ -51,6 +52,7 @@ def deleteCard(request):
             response["result"] = 0
             response["message"] = str(e)
     return JsonResponse(response)
+
 
 @csrf_exempt
 def listCard(request):
@@ -174,6 +176,9 @@ def listPastPayments(request):
                     payment_list.append(payment)
                     paymentCount += 1
                     total_payment_price += each.amaount
+
+            payment_list = sorted(
+                payment_list, key=lambda payment: payment["date"])
             response["result"] = 1
             response["message"] = "İşlem Başarılı."
             response["paymentCount"] = paymentCount
