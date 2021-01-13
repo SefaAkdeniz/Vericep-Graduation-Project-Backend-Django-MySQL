@@ -14,13 +14,40 @@ def addCard(request):
         try:
             json_data = json.loads(request.body)
             user_id = json_data["user_id"]
-            card_name = json_data["card_name"]
+            name = json_data["name"]
             card_number = json_data["card_number"]
             expiration_date_month = json_data["expiration_date_month"]
             expiration_date_year = json_data["expiration_date_year"]
             cvc = json_data["cvc"]
+            try:
+                int(card_number)
+                if len(card_number)!=16:
+                    response["result"] = 0
+                    response["message"] = "Kart Numarısı 16 haneli olmalıdır."
+                    return JsonResponse(response) 
+
+            except:
+                response["result"] = 0
+                response["message"] = "Kart Numarısı sayısal değer olmalıdır."
+                return JsonResponse(response)
+            try:
+                int(cvc)
+                if len(cvc)!=3:
+                    response["result"] = 0
+                    response["message"] = "Kart Numarısı 3 haneli olmalıdır."
+                    return JsonResponse(response)
+            except:
+                response["result"] = 0
+                response["message"] = "CVV sayısal değer olmalıdır."
+                return JsonResponse(response)
+
+            if len(name.split(" "))<2:
+                response["result"] = 0
+                response["message"] = "Ad soyad en az 2 kelimeden oluşmalıdır."
+                return JsonResponse(response)
+
             user_ = User.objects.filter(id=user_id).first()
-            card = CreditCard(user=user_, card_name=card_name, card_number=card_number,
+            card = CreditCard(user=user_, card_name=name, card_number=card_number,
                               expiration_date_month=expiration_date_month, expiration_date_year=expiration_date_year, cvc=cvc)
             card.save()
             response["result"] = 1
