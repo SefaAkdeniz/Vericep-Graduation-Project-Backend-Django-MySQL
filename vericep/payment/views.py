@@ -132,18 +132,25 @@ def doPayment(request):
             add_amaount = json_data["add_amaount"]
             card_id = json_data["card_id"]
             verification_cvc = json_data["verification_cvc"]
-            user_ = User.objects.filter(id=user_id).first()
-            balance = Balance.objects.filter(user=user_).first()
-            balance.amaount += Decimal(add_amaount)
-            balance.save()
+            add_amaount=Decimal(add_amaount.replace(",","."))
+
             card = CreditCard.objects.filter(id=card_id).first()
             if int(verification_cvc) != int(card.cvc):
                 response["result"] = 0
                 response["message"] = "CVC Numarası Doğrulanamadı."
                 return JsonResponse(response)
 
+            if add_amaount>=1000:
+                response["result"] = 0
+                response["message"] = "1000 TL'den az ödeme yapabilirsiniz."
+                return JsonResponse(response)
+
+            user_ = User.objects.filter(id=user_id).first()
+            balance = Balance.objects.filter(user=user_).first()
+            balance.amaount += Decimal(add_amaount)
             payment = PastPayments(amaount=add_amaount, card=card)
             payment.save()
+            balance.save()
             response["result"] = 1
             response["message"] = "İşlem Başarılı."
         except Exception as e:
