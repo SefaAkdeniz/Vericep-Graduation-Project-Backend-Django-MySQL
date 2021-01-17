@@ -21,7 +21,7 @@ def listModel(request):
                 for each2 in inputs:
                     inputCount += 1
                     input_ = {"id": each2.pk, "name": each2.input_name,
-                              "type": each2.typed, "description": each2.description}
+                              "type": each2.typed, "description": each2.description, "parameter_name": each2.parameter_name}
                     input_list.append(input_)
                 model = {"id": each.pk, "name": each.model_name, "url": each.heroku_url,
                          "description": each.model_description, "inputCount": inputCount, "inputs": input_list}
