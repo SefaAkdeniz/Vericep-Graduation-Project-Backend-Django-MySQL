@@ -21,10 +21,10 @@ def addCard(request):
             cvc = json_data["cvc"]
             try:
                 int(card_number)
-                if len(card_number)!=16:
+                if len(card_number) != 16:
                     response["result"] = 0
                     response["message"] = "Kart Numarısı 16 haneli olmalıdır."
-                    return JsonResponse(response) 
+                    return JsonResponse(response)
 
             except:
                 response["result"] = 0
@@ -32,7 +32,7 @@ def addCard(request):
                 return JsonResponse(response)
             try:
                 int(cvc)
-                if len(cvc)!=3:
+                if len(cvc) != 3:
                     response["result"] = 0
                     response["message"] = "Kart Numarısı 3 haneli olmalıdır."
                     return JsonResponse(response)
@@ -41,7 +41,7 @@ def addCard(request):
                 response["message"] = "CVV sayısal değer olmalıdır."
                 return JsonResponse(response)
 
-            if len(name.split(" "))<2:
+            if len(name.split(" ")) < 2:
                 response["result"] = 0
                 response["message"] = "Ad soyad en az 2 kelimeden oluşmalıdır."
                 return JsonResponse(response)
@@ -126,30 +126,6 @@ def getBalance(request):
 
 
 @csrf_exempt
-def setBalance(request):
-    response = dict()
-    if request.method == 'POST':
-        try:
-            json_data = json.loads(request.body)
-            user_id = json_data["user_id"]
-            process_price = json_data["process_price"]
-            user_ = User.objects.filter(id=user_id).first()
-            balance = Balance.objects.filter(user=user_).first()
-            balance.amaount += Decimal(process_price)
-            if balance.amaount < 0:
-                response["result"] = 0
-                response["message"] = "Bakiye Yetersiz."
-                return JsonResponse(response)
-            balance.save()
-            response["result"] = 1
-            response["message"] = "İşlem Başarılı."
-        except Exception as e:
-            response["result"] = 0
-            response["message"] = str(e)
-    return JsonResponse(response)
-
-
-@csrf_exempt
 def doPayment(request):
     response = dict()
     if request.method == 'POST':
@@ -159,7 +135,7 @@ def doPayment(request):
             add_amaount = json_data["add_amaount"]
             card_id = json_data["card_id"]
             verification_cvc = json_data["verification_cvc"]
-            add_amaount=Decimal(add_amaount.replace(",","."))
+            add_amaount = Decimal(add_amaount.replace(",", "."))
 
             card = CreditCard.objects.filter(id=card_id).first()
             if int(verification_cvc) != int(card.cvc):
@@ -167,7 +143,7 @@ def doPayment(request):
                 response["message"] = "CVC Numarası Doğrulanamadı."
                 return JsonResponse(response)
 
-            if add_amaount>=1000:
+            if add_amaount >= 1000:
                 response["result"] = 0
                 response["message"] = "1000 TL'den az ödeme yapabilirsiniz."
                 return JsonResponse(response)
