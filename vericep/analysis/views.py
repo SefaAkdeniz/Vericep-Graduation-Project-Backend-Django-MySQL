@@ -1,10 +1,12 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Analysis
+from payment.models import PastPayments, Balance, CreditCard
 from django.contrib.auth.models import User
 import json
 import os
 from . import sendMail
+from decimal import Decimal
 
 
 # Create your views here.
@@ -18,7 +20,7 @@ def create(request):
 
         file_format = "."+csv_file.name.split('.')[1]
 
-        if file_format !=".csv":
+        if file_format != ".csv":
             response["result"] = 0
             response["message"] = "Geçersiz dosya formatı."
 
@@ -27,6 +29,15 @@ def create(request):
         user_id = request.POST["user_id"]
 
         user_ = User.objects.filter(id=user_id).first()
+
+        balance = Balance.objects.filter(user=user_).first()
+        balance.amaount += Decimal(-17.99)
+        if balance.amaount < 0:
+            response["result"] = 0
+            response["message"] = "Bakiye Yetersiz."
+            return JsonResponse(response)
+        balance.save()
+
         analysis = Analysis(user=user_)
         analysis.save()
         print(analysis.pk)
