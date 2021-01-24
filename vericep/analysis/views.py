@@ -12,7 +12,7 @@ from decimal import Decimal
 # Create your views here.
 
 @csrf_exempt
-def create(request):
+def createAnalysis(request):
     response = dict()
     if request.method == 'POST':
 
